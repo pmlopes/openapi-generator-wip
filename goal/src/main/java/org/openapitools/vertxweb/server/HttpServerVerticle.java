@@ -1,16 +1,23 @@
 package org.openapitools.vertxweb.server;
 
 import io.vertx.core.AbstractVerticle;
+import io.vertx.core.Future;
 import io.vertx.core.Promise;
 import io.vertx.core.Vertx;
 import io.vertx.core.impl.logging.Logger;
 import io.vertx.core.impl.logging.LoggerFactory;
+import io.vertx.core.json.JsonArray;
 import io.vertx.ext.web.Router;
 import io.vertx.ext.web.RoutingContext;
+import io.vertx.ext.web.handler.impl.HttpStatusException;
 import io.vertx.ext.web.openapi.RouterBuilder;
 import io.vertx.ext.web.openapi.RouterBuilderOptions;
 
 import org.openapitools.vertxweb.server.api.PetsApi;
+import org.openapitools.vertxweb.server.model.Pet;
+
+import java.util.Arrays;
+import java.util.Random;
 
 public class HttpServerVerticle extends AbstractVerticle {
 
@@ -54,6 +61,22 @@ public class HttpServerVerticle extends AbstractVerticle {
 //                                        .json(new JsonArray()
 //                                                .add(new Pet(1L, "Tom", "cat"))
 //                                                .add(new Pet(2L, "Jerry", "mouse")));
+                            })
+                            .listPets(args -> {
+                                logger.info("listPetsHandler()");
+                                logger.debug("Parameter limit is " + args.limit());
+
+                                boolean maybeSuccess = Math.random() % 2 == 0;
+
+                                // failure
+                                if (maybeSuccess) {
+                                    return Future.succeededFuture(
+                                            new JsonArray()
+                                                .add(new Pet(1L, "Tom", "cat"))
+                                                .add(new Pet(2L, "Jerry", "mouse")));
+                                } else {
+                                    return Future.failedFuture(new HttpStatusException(501));
+                                }
                             })
                             .showPetsByIdHandler(ctx -> {
                                 logger.info("showPetById()");

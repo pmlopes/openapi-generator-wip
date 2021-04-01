@@ -10,7 +10,7 @@ import io.vertx.ext.web.RoutingContext;
 import io.vertx.ext.web.openapi.RouterBuilder;
 import io.vertx.ext.web.openapi.RouterBuilderOptions;
 
-import org.openapitools.vertxweb.server.api.PetsApiOAIHandler;
+import org.openapitools.vertxweb.server.api.PetsApi;
 
 public class HttpServerVerticle extends AbstractVerticle {
 
@@ -33,7 +33,7 @@ public class HttpServerVerticle extends AbstractVerticle {
                             .setRequireSecurityHandlers(false)
                     );
 
-                    PetsApiOAIHandler.create()
+                    PetsApi.create(builder)
                             .createPetsHandler(ctx -> {
                                 logger.info("createPets()");
 
@@ -63,8 +63,7 @@ public class HttpServerVerticle extends AbstractVerticle {
                                 ctx.fail(501);
 //                                ctx
 //                                        .json(new Pet(1L, "Tom", "cat"));
-                            })
-                            .mount(builder);
+                            });
 
                     Router router = builder.createRouter();
                     router.errorHandler(400, this::validationFailureHandler);

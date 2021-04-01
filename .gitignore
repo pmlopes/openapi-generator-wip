@@ -1,0 +1,9 @@
+openapi-generator-cli-5.1.0.jar
+
+target/
+
+.idea/
+*.iml
+
+.openapi-generator/
+.openapi-generator-ignore

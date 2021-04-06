@@ -1,16 +1,23 @@
 package org.openapitools.vertxweb.server;
 
 import io.vertx.core.AbstractVerticle;
+import io.vertx.core.Future;
 import io.vertx.core.Promise;
 import io.vertx.core.Vertx;
 import io.vertx.core.impl.logging.Logger;
 import io.vertx.core.impl.logging.LoggerFactory;
+import io.vertx.core.json.JsonArray;
 import io.vertx.ext.web.Router;
 import io.vertx.ext.web.RoutingContext;
+import io.vertx.ext.web.handler.impl.HttpStatusException;
 import io.vertx.ext.web.openapi.RouterBuilder;
 import io.vertx.ext.web.openapi.RouterBuilderOptions;
 
 import org.openapitools.vertxweb.server.api.PetsApi;
+import org.openapitools.vertxweb.server.model.Pet;
+
+import java.util.Arrays;
+import java.util.Random;
 
 public class HttpServerVerticle extends AbstractVerticle {
 
@@ -44,20 +51,24 @@ public class HttpServerVerticle extends AbstractVerticle {
 //                                        .setStatusCode(201)
 //                                        .end();
                             })
-                            .listPetsHandler(ctx -> {
+                            .listPets((ctx, limit) -> {
                                 logger.info("listPetsHandler()");
-                                logger.debug("Parameter limit is " + ctx.get("limit"));
+                                logger.debug("Parameter limit is " + limit);
 
-                                // TODO: Implement the operation
-                                ctx.fail(501);
-//                                ctx
-//                                        .json(new JsonArray()
-//                                                .add(new Pet(1L, "Tom", "cat"))
-//                                                .add(new Pet(2L, "Jerry", "mouse")));
+                                boolean maybeSuccess = Math.random() % 2 == 0;
+
+                                // failure
+                                if (maybeSuccess) {
+                                    ctx.json(new JsonArray()
+                                                .add(new Pet(1L, "Tom", "cat"))
+                                                .add(new Pet(2L, "Jerry", "mouse")));
+                                } else {
+                                    ctx.fail(501, new RuntimeException("Ooops!"));
+                                }
                             })
-                            .showPetsByIdHandler(ctx -> {
+                            .showPetByIdHandler((ctx, petId) -> {
                                 logger.info("showPetById()");
-                                logger.debug("Parameter petId is " + ctx.get("petId"));
+                                logger.debug("Parameter petId is " + petId);
 
                                 // TODO: Implement the operation
                                 ctx.fail(501);

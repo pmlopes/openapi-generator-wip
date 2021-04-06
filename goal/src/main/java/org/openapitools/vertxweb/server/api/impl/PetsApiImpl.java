@@ -1,11 +1,13 @@
 package org.openapitools.vertxweb.server.api.impl;
 
-import io.vertx.core.Handler;
 import io.vertx.ext.web.RoutingContext;
 import io.vertx.ext.web.openapi.RouterBuilder;
 import io.vertx.ext.web.validation.RequestParameters;
 import io.vertx.ext.web.validation.ValidationHandler;
+import org.openapitools.vertxweb.server.api.operation.CreatePetsHandler;
+import org.openapitools.vertxweb.server.api.operation.ListPetsHandler;
 import org.openapitools.vertxweb.server.api.PetsApi;
+import org.openapitools.vertxweb.server.api.operation.ShowPetByIdHandler;
 
 public class PetsApiImpl implements PetsApi {
 
@@ -24,20 +26,23 @@ public class PetsApiImpl implements PetsApi {
     }
 
     @Override
-    public PetsApi createPetsHandler(Handler<RoutingContext> handler) {
-        builder.operation("createPets").handler(handler);
+    public PetsApi createPetsHandler(CreatePetsHandler handler) {
+        builder.operation("createPets")
+                .handler(ctx -> handler.handle(ctx));
         return this;
     }
 
     @Override
-    public PetsApi listPetsHandler(Handler<RoutingContext> handler) {
-        builder.operation("listPets").handler(handler);
+    public PetsApi listPets(ListPetsHandler handler) {
+        builder.operation("showPetById")
+                .handler(ctx -> handler.handle(ctx, ctx.get("limit")));
         return this;
     }
 
     @Override
-    public PetsApi showPetsByIdHandler(Handler<RoutingContext> handler) {
-        builder.operation("showPetById").handler(handler);
+    public PetsApi showPetByIdHandler(ShowPetByIdHandler handler) {
+        builder.operation("showPetById")
+                .handler(ctx -> handler.handle(ctx, ctx.get("petId")));
         return this;
     }
 

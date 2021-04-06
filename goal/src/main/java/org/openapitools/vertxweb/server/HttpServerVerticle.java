@@ -51,36 +51,24 @@ public class HttpServerVerticle extends AbstractVerticle {
 //                                        .setStatusCode(201)
 //                                        .end();
                             })
-                            .listPetsHandler(ctx -> {
+                            .listPets((ctx, limit) -> {
                                 logger.info("listPetsHandler()");
-                                logger.debug("Parameter limit is " + ctx.get("limit"));
-
-                                // TODO: Implement the operation
-                                ctx.fail(501);
-//                                ctx
-//                                        .json(new JsonArray()
-//                                                .add(new Pet(1L, "Tom", "cat"))
-//                                                .add(new Pet(2L, "Jerry", "mouse")));
-                            })
-                            .listPets(args -> {
-                                logger.info("listPetsHandler()");
-                                logger.debug("Parameter limit is " + args.limit());
+                                logger.debug("Parameter limit is " + limit);
 
                                 boolean maybeSuccess = Math.random() % 2 == 0;
 
                                 // failure
                                 if (maybeSuccess) {
-                                    return Future.succeededFuture(
-                                            new JsonArray()
+                                    ctx.json(new JsonArray()
                                                 .add(new Pet(1L, "Tom", "cat"))
                                                 .add(new Pet(2L, "Jerry", "mouse")));
                                 } else {
-                                    return Future.failedFuture(new HttpStatusException(501));
+                                    ctx.fail(501, new RuntimeException("Ooops!"));
                                 }
                             })
-                            .showPetsByIdHandler(ctx -> {
+                            .showPetByIdHandler((ctx, petId) -> {
                                 logger.info("showPetById()");
-                                logger.debug("Parameter petId is " + ctx.get("petId"));
+                                logger.debug("Parameter petId is " + petId);
 
                                 // TODO: Implement the operation
                                 ctx.fail(501);

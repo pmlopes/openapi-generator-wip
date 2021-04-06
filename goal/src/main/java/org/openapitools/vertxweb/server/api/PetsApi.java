@@ -2,13 +2,13 @@ package org.openapitools.vertxweb.server.api;
 
 import io.vertx.codegen.annotations.Fluent;
 import io.vertx.codegen.annotations.VertxGen;
-import io.vertx.core.Future;
 import io.vertx.core.Handler;
 import io.vertx.ext.web.RoutingContext;
 import io.vertx.ext.web.openapi.RouterBuilder;
 import org.openapitools.vertxweb.server.api.impl.PetsApiImpl;
-
-import java.util.function.Function;
+import org.openapitools.vertxweb.server.api.operation.CreatePetsHandler;
+import org.openapitools.vertxweb.server.api.operation.ListPetsHandler;
+import org.openapitools.vertxweb.server.api.operation.ShowPetByIdHandler;
 
 @VertxGen
 public interface PetsApi {
@@ -21,23 +21,17 @@ public interface PetsApi {
      * Generate generic javadoc, stating that the API params are parsed into the expected type in the context data
      */
     @Fluent
-    PetsApi createPetsHandler(Handler<RoutingContext> handler);
+    PetsApi createPetsHandler(CreatePetsHandler handler);
 
     /**
      * Generate generic javadoc, stating that the API params are parsed into the expected type in the context data
      */
     @Fluent
-    PetsApi listPetsHandler(Handler<RoutingContext> handler);
+    PetsApi listPets(ListPetsHandler function);
 
     /**
      * Generate generic javadoc, stating that the API params are parsed into the expected type in the context data
      */
     @Fluent
-    <T> PetsApi listPets(Function<ListPetsArguments, Future<T>> function);
-
-    /**
-     * Generate generic javadoc, stating that the API params are parsed into the expected type in the context data
-     */
-    @Fluent
-    PetsApi showPetsByIdHandler(Handler<RoutingContext> handler);
+    PetsApi showPetByIdHandler(ShowPetByIdHandler handler);
 }

@@ -1,18 +1,13 @@
 package org.openapitools.vertxweb.server.api.impl;
 
-import io.vertx.core.Future;
-import io.vertx.core.Handler;
-import io.vertx.core.buffer.Buffer;
-import io.vertx.core.http.HttpHeaders;
 import io.vertx.ext.web.RoutingContext;
-import io.vertx.ext.web.handler.impl.HttpStatusException;
 import io.vertx.ext.web.openapi.RouterBuilder;
 import io.vertx.ext.web.validation.RequestParameters;
 import io.vertx.ext.web.validation.ValidationHandler;
-import org.openapitools.vertxweb.server.api.ListPetsArguments;
+import org.openapitools.vertxweb.server.api.operation.CreatePetsHandler;
+import org.openapitools.vertxweb.server.api.operation.ListPetsHandler;
 import org.openapitools.vertxweb.server.api.PetsApi;
-
-import java.util.function.Function;
+import org.openapitools.vertxweb.server.api.operation.ShowPetByIdHandler;
 
 public class PetsApiImpl implements PetsApi {
 
@@ -31,78 +26,23 @@ public class PetsApiImpl implements PetsApi {
     }
 
     @Override
-    public PetsApi createPetsHandler(Handler<RoutingContext> handler) {
-        builder.operation("createPets").handler(handler);
+    public PetsApi createPetsHandler(CreatePetsHandler handler) {
+        builder.operation("createPets")
+                .handler(ctx -> handler.handle(ctx));
         return this;
     }
 
     @Override
-    public PetsApi listPetsHandler(Handler<RoutingContext> handler) {
-        builder.operation("listPets").handler(handler);
+    public PetsApi listPets(ListPetsHandler handler) {
+        builder.operation("showPetById")
+                .handler(ctx -> handler.handle(ctx, ctx.get("limit")));
         return this;
     }
 
     @Override
-    public <T> PetsApi listPets(Function<ListPetsArguments, Future<T>> function) {
-        builder.operation("showPetById").handler(ctx -> {
-            // TODO: extract the function to handler into a helper as it must be reused
-            try {
-                function
-                        .apply(new ListPetsArguments() {
-                            @Override
-                            public RoutingContext context() {
-                                return ctx;
-                            }
-
-                            @Override
-                            public Long limit() {
-                                return ctx.get("limit");
-                            }
-                        })
-                        .onFailure(ctx::fail)
-                        .onSuccess(body -> {
-                            if (!ctx.response().headWritten()) {
-                                if (body == null) {
-                                    ctx
-                                            .response()
-                                            .setStatusCode(204)
-                                            .end();
-                                } else {
-                                    final boolean hasContentType = ctx.response().headers().contains(HttpHeaders.CONTENT_TYPE);
-                                    if (body instanceof Buffer) {
-                                        if (!hasContentType) {
-                                            ctx.response().putHeader(HttpHeaders.CONTENT_TYPE, "application/octet-stream");
-                                        }
-                                        ctx.end((Buffer) body);
-                                    } else if (body instanceof String) {
-                                        if (!hasContentType) {
-                                            ctx.response().putHeader(HttpHeaders.CONTENT_TYPE, "text/html");
-                                        }
-                                        ctx.end((String) body);
-                                    } else {
-                                        ctx.json(body);
-                                    }
-                                }
-                            } else {
-                                if (body == null) {
-                                    if (!ctx.response().ended()) {
-                                        ctx.end();
-                                    }
-                                } else {
-                                    ctx.fail(new HttpStatusException(500, "Response already written"));
-                                }
-                            }
-                        });
-            } catch (RuntimeException e) {
-                ctx.fail(e);
-            }
-        });
-        return this;
-    }
-
-    @Override
-    public PetsApi showPetsByIdHandler(Handler<RoutingContext> handler) {
-        builder.operation("showPetById").handler(handler);
+    public PetsApi showPetByIdHandler(ShowPetByIdHandler handler) {
+        builder.operation("showPetById")
+                .handler(ctx -> handler.handle(ctx, ctx.get("petId")));
         return this;
     }
 
